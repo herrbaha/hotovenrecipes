@@ -1,35 +1,34 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import Tarifler from './Tarifler';
+import Recipes from './Recipes';
 import png from './images/cookbook.png'
 function App() {
   const appID = "29dba890";
   const appKey = "a5cf72ed0dabf9f3f0651254233f61ae";
   //const url = `https://api.edamam.com/search?q=chicken&app_id=${appID}&app_key=${appKey}`;
-  const [tarif, setTarif] = useState([]);
-  const [ara, setAra] = useState("");
-  const [istek, setIstek] = useState("top banana");
+  const [recip, setRecip] = useState([]);
+  const [search, setSearch] = useState("");
+  const [request, setRequest] = useState("top banana");
 
 
   useEffect(() => {
-    tarifial();
-  },[istek]);
+    getRecipe();
+  },[request]);
 
-  const tarifial = async () => {
-    const cvp = await fetch(`https://api.edamam.com/search?q=${istek}&app_id=${appID}&app_key=${appKey}`);// niye url olarak kabul etmiyor?
-    const veri = await cvp.json();
-    setTarif(veri.hits)
+  const getRecipe = async () => {
+    const answer = await fetch(`https://api.edamam.com/search?q=${request}&app_id=${appID}&app_key=${appKey}`);
+    const data = await answer.json();
+    setRecip(data.hits)
   }
 
-  const aramayiGüncelle = (e) => {
-    setAra(e.target.value)
-    // console.log(e.target.value);
+  const updateSearch = (e) => {
+    setSearch(e.target.value)
   }
 
-  const istenenKelime = (e) => {
+  const desiredWord = (e) => {
     e.preventDefault();
-    setIstek(ara);
-    setAra("");
+    setRequest(search);
+    setSearch("");
   
   }
 
@@ -37,13 +36,13 @@ function App() {
   return (
     <div className="App">
        <div > <img  className="mylogo" src={png} alt="" /> </div>   
-      <form onSubmit={istenenKelime} className="search-form">
-        <input className="search-input" placeholder="Search..." type="text" value={ara} onChange={aramayiGüncelle}/>
+      <form onSubmit={desiredWord} className="search-form">
+        <input className="search-input" placeholder="Search..." type="text" value={search} onChange={updateSearch}/>
         <button className="search-button">Search</button>
       </form>
       <div  className="recipes">
-        {tarif.map((tarifler, index) => ( //burasi jsx bölgesi oldugu icin süsülü parantez yerine normel parantez kullaniliyor burada. süslü parantez koyarsak return gerekiyor, farki nedir?
-         <Tarifler key={index} baslik={tarifler.recipe.label} kalori={tarifler.recipe.calories} images={tarifler.recipe.image} icindekiler={tarifler.recipe.ingredients}/>//key index'i kullanmasak da oldu niye?
+        {recip.map((items, index) => ( 
+         <Recipes key={index} title={items.recipe.label} calorie={items.recipe.calories} images={items.recipe.image} ingredients={items.recipe.ingredients}/>
         ))}
       </div>
     
